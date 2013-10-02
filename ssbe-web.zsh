@@ -28,10 +28,10 @@ STD_ARG=(-v --anyauth -u $SSBE_USER:$SSBE_PASS)
 export STD_ARG
 NONVERBOSE_ARG=(--anyauth -u $SSBE_USER:$SSBE_PASS)
 
-PRISSY=prissy
 
 TIDYJSON=(ruby -rubygems -e "require 'json';puts JSON.pretty_generate(JSON.parse(STDIN.read),{:space_before => '$fg[magenta] ',:space => '$fg[cyan] ',:indent => '$fg[pr_green]  '}).gsub('\/','/')")
 export TIDYJSON
+PRISSY="${TIDYJSON}"
 
 TIDYJSONNOCOL=(ruby -rubygems -e "require 'json';puts JSON.pretty_generate(JSON.parse(STDIN.read)).gsub('\/','/')")
 
@@ -196,4 +196,13 @@ function li_report_color {
 function li_report {
 # fuck yes check this shit out
  curl $NONVERBOSE_ARG -s -H "$ACCEPT_HEADER" "$@" | ruby -rubygems -e "require 'json';require 'time';JSON.parse(STDIN.read)['items'].sort {|a,b| a['clientname'] <=> b['clientname']}.each {|i| printf(\"%18.18s %-38.38s %s%5i %s\n\", \"#{i['clientname']}\",\"#{i['hostname']}\",\"\",(Time.now-Time.parse(i['last_message'])).to_i/60,\" minutes ago\")}"
+}
+
+function addhost {
+    postsskj "{\"_type\":\"Host\",\"name\":\"$1\",\"tags\":[\"Added via postsskj - please edit tag\"],\"active?\":true}" http://core.$2/clients/$3/hosts
+}
+
+# addagent {User account ID number} {backend fqdn} {client name} {host id number} {configuration id number}
+function addagent {
+     postssmj "{\"_type\":\"Agent\",\"account_href\":\"http://core.$2/accounts/$1\",\"client_href\":\"http://core.$2/clients/$3\",\"host_href\":\"http://core.$2/hosts/$4\",\"configuration_href\":\"http://config.$2/configurations/$5\",\"notes\":null}" http://core.$2/agents
 }
