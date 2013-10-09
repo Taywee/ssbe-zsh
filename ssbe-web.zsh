@@ -39,6 +39,10 @@ function ndcurl {
   curl -v --anyauth -u $SSBE_USER:$SSBE_PASS -H "$ACCEPT_HEADER" "$@"
 }
 
+function qndcurl {
+  curl --anyauth -u $SSBE_USER:$SSBE_PASS -H "$ACCEPT_HEADER" "$@"
+}
+
 function devndcurl {
   curl $DEV_ARG -H "$ACCEPT_HEADER" "$@"
 }
@@ -205,4 +209,46 @@ function addhost {
 # addagent {User account ID number} {backend fqdn} {client name} {host id number} {configuration id number}
 function addagent {
      postssmj "{\"_type\":\"Agent\",\"account_href\":\"http://core.$2/accounts/$1\",\"client_href\":\"http://core.$2/clients/$3\",\"host_href\":\"http://core.$2/hosts/$4\",\"configuration_href\":\"http://config.$2/configurations/$5\",\"notes\":null}" http://core.$2/agents
+}
+
+function jpath {
+    SELECTOR="$1"
+    shift
+    if [ "$#" -eq 1 ]
+    then
+        JSON="$1"
+        shift
+    else
+        JSON="$(cat)"
+    fi
+    SELECTOR="$(echo "${SELECTOR}" | sed 's/\/\([0-9]\+\)/[\1]/g')"
+    SELECTOR="$(echo "${SELECTOR}" | sed 's/\/\([^\/\[]\+\)/["\1"]/g')"
+    #echo ${SELECTOR}
+    node -e "var struct = ${JSON}; process.stdout.write(struct${SELECTOR} + \"\\n\");"
+}
+
+# changeagentconfig BACKEND AGENTID NEWCONFIGPARENTID
+# For changing the parent id of an agent with the wrong parent in its config
+function changeagentconfig {
+    BACKEND="$1"
+    shift
+    AGENTID="$1"
+    shift
+    NEWCONFIGPARENTID="$1"
+    shift
+    OLDAGENTPAGE="$(qndcurl "https://core.${BACKEND}/agents/${AGENTID}.json")"
+    echo "Old Agent Page:\n${OLDAGENTPAGE}"
+    OLDCONFIGHREF="$(jpath "/configuration_href" "${OLDAGENTPAGE}")"
+    echo "Old Config Href:\n${OLDCONFIGHREF}"
+    CLIENTHREF="$(jpath "/client_href" "${OLDAGENTPAGE}" | sed 's/https/http/')"
+    echo "Client Href:\n${CLIENTHREF}"
+    HOSTHREF="$(jpath "/host_href" "${OLDAGENTPAGE}")"
+    echo "Host Href:\n${HOSTHREF}"
+    HOSTNAME="$(qndcurl "${HOSTHREF}.json" | jpath "/name")"
+    echo "Hostname:\n${HOSTNAME}"
+    NEWCONFIGJSON="$(ndcurl -X POST "http://config.${BACKEND}/configurations.json" -d 'submit=save' -d 'configuration[public]=false' -d 'configuration[notes]=NONOTES' -d "configuration[name]=${HOSTNAME}" -d "configuration[parent_id]=${NEWCONFIGPARENTID}" -d "configuration[client_href]=${CLIENTHREF}")"
+    echo "New Config JSON:\n${NEWCONFIGJSON}"
+    NEWCONFIGHREF="$(jpath "/href" "${NEWCONFIGJSON}")"
+    echo "New Config HREF:\n${NEWCONFIGHREF}"
+    ndcurl -X PUT "https://core.${BACKEND}/agents/${AGENTID}" -d 'utf8=✓' -d  'commit=save' -d "agent[configuration_href]=${NEWCONFIGHREF}"
 }
