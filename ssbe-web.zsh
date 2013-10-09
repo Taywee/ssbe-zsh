@@ -39,8 +39,8 @@ function ndcurl {
   http --json --pretty format --auth $SSBE_USER:$SSBE_PASS "$@"
 }
 
-function qndcurl {
-  curl --anyauth -u $SSBE_USER:$SSBE_PASS -H "$ACCEPT_HEADER" "$@"
+function formcurl {
+  http --form --pretty format --auth $SSBE_USER:$SSBE_PASS "$@"
 }
 
 function devndcurl {
@@ -236,7 +236,7 @@ function changeagentconfig {
     shift
     NEWCONFIGPARENTID="$1"
     shift
-    OLDAGENTPAGE="$(qndcurl "https://core.${BACKEND}/agents/${AGENTID}.json")"
+    OLDAGENTPAGE="$(ndcurl "https://core.${BACKEND}/agents/${AGENTID}.json")"
     echo "Old Agent Page:\n${OLDAGENTPAGE}"
     OLDCONFIGHREF="$(jpath "/configuration_href" "${OLDAGENTPAGE}")"
     echo "Old Config Href:\n${OLDCONFIGHREF}"
@@ -244,11 +244,11 @@ function changeagentconfig {
     echo "Client Href:\n${CLIENTHREF}"
     HOSTHREF="$(jpath "/host_href" "${OLDAGENTPAGE}")"
     echo "Host Href:\n${HOSTHREF}"
-    HOSTNAME="$(qndcurl "${HOSTHREF}.json" | jpath "/name")"
+    HOSTNAME="$(ndcurl "${HOSTHREF}.json" | jpath "/name")"
     echo "Hostname:\n${HOSTNAME}"
-    NEWCONFIGJSON="$(ndcurl -X POST "http://config.${BACKEND}/configurations.json" -d 'submit=save' -d 'configuration[public]=false' -d 'configuration[notes]=NONOTES' -d "configuration[name]=${HOSTNAME}" -d "configuration[parent_id]=${NEWCONFIGPARENTID}" -d "configuration[client_href]=${CLIENTHREF}")"
+    NEWCONFIGJSON="$(formcurl POST "http://config.${BACKEND}/configurations.json" 'submit=save' 'configuration[public]=false' 'configuration[notes]=NONOTES' "configuration[name]=${HOSTNAME}" "configuration[parent_id]=${NEWCONFIGPARENTID}" "configuration[client_href]=${CLIENTHREF}")"
     echo "New Config JSON:\n${NEWCONFIGJSON}"
     NEWCONFIGHREF="$(jpath "/href" "${NEWCONFIGJSON}")"
     echo "New Config HREF:\n${NEWCONFIGHREF}"
-    ndcurl -X PUT "https://core.${BACKEND}/agents/${AGENTID}" -d 'utf8=✓' -d  'commit=save' -d "agent[configuration_href]=${NEWCONFIGHREF}"
+    formcurl PUT "https://core.${BACKEND}/agents/${AGENTID}.json" 'utf8=✓'  'commit=save' "agent[configuration_href]=${NEWCONFIGHREF}"
 }
