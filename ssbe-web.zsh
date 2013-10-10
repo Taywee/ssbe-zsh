@@ -1,7 +1,11 @@
+#!/bin/zsh
 # Curl webservice setuff.
-
 autoload colors ; colors
 
+if [ -e ./.ssbe ]
+then
+    source ./.ssbe
+fi
 
 function colindex {
   indent_level++
