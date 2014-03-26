@@ -52,7 +52,7 @@ function devndcurl {
 }
 
 function dcurl {
-  http --json --pretty all --auth $SSBE_USER:$SSBE_PASS "$@"
+  http --verbose --json --pretty all --auth $SSBE_USER:$SSBE_PASS "$@" "$ACCEPT_HEADER"
 }
 function bwcurl {
   ndcurl "$@"
@@ -63,7 +63,7 @@ function vcurl {
   bwcurl $@ | vim --cmd 'let no_plugin_maps=1' -c 'set ft=json' -c 'au VimEnter * set nomod' -
 }
 function mcurl {
-  dcurl -H $CONTENT_SSMJ -d $@
+  dcurl $CONTENT_SSMJ $@
 }
 
 # SSCJ
@@ -116,7 +116,7 @@ function putsskj {
   dcurl -X PUT -H $CONTENT_SSKJ -d $@
 }
 function postsskj {
-  dcurl -X POST -H $CONTENT_SSKJ -d $@
+  dcurl POST "$@" $CONTENT_SSKJ 
 }
 function delsskj {
   dcurl -X DELETE -H $CONTENT_SSKJ $@
@@ -130,7 +130,7 @@ function putssmj {
   ndcurl -X PUT -H $CONTENT_SSMJ -d $@
 }
 function postssmj {
-  dcurl -X POST -H $CONTENT_SSMJ -d $@
+  dcurl POST "$@" $CONTENT_SSMJ 
 }
 function delssmj {
   dcurl -X DELETE -H $CONTENT_SSMJ $@
@@ -207,12 +207,12 @@ function li_report {
 }
 
 function addhost {
-    postsskj "{\"_type\":\"Host\",\"name\":\"$1\",\"tags\":[\"Added via postsskj - please edit tag\"],\"active?\":true}" http://core.$2/clients/$3/hosts
+    postsskj http://core.$2/clients/$3/hosts "_type=Host" "name=$1" 'tags:=["Added via postsskj - please edit tag"]' "active?:=true"
 }
 
 # addagent {User account ID number} {backend fqdn} {client name} {host id number} {configuration id number}
 function addagent {
-     postssmj "{\"_type\":\"Agent\",\"account_href\":\"http://core.$2/accounts/$1\",\"client_href\":\"http://core.$2/clients/$3\",\"host_href\":\"http://core.$2/hosts/$4\",\"configuration_href\":\"http://config.$2/configurations/$5\",\"notes\":null}" http://core.$2/agents
+     postssmj http://core.$2/agents "_type=Agent" "account_href=http://core.$2/accounts/$1" "client_href=http://core.$2/clients/$3" "host_href=http://core.$2/hosts/$4" "configuration_href=http://config.$2/configurations/$5" "notes:=null"
 }
 
 function jpath {
