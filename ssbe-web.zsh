@@ -68,100 +68,100 @@ function mcurl {
 
 # SSCJ
 function getsscj {
-  dcurl -H $CONTENT_SSCJ $@
+  dcurl "$@" "$CONTENT_SSCJ"
 }
 function putsscj {
-  dcurl -X PUT -H $CONTENT_SSCJ -d $@
+  dcurl PUT "$@" "$CONTENT_SSCJ"
 }
 function postsscj {
-  dcurl  -X POST -H $CONTENT_SSCJ -d $@
+  dcurl POST "$@" "$CONTENT_SSCJ"
 }
 function delsscj {
-  dcurl -X DELETE -H $CONTENT_SSCJ $@
+  dcurl DELETE "$@" "$CONTENT_SSCJ"
 }
 
 # SSAC
 function getssac {
-  dcurl -H $CONTENT_SSAC -d $@
+  dcurl "$@" "$CONTENT_SSAC"
 }
 function putssac {
-  dcurl -X PUT -H $CONTENT_SSAC -d $@
+  dcurl PUT "$@" "$CONTENT_SSAC"
 }
 function postssac {
-  dcurl -X POST -H $CONTENT_SSAC -d $@
+  dcurl POST "$@" "$CONTENT_SSAC"
 }
 function delssac {
-  dcurl -X DELETE -H $CONTENT_SSAC $@
+  dcurl DELETE "$@" "$CONTENT_SSAC"
 }
 
 # SSJ
 function getssj {
-  curl $STD_ARG -H $ACCEPT_SSJ $@ | $PRISSY
+  dcurl "$@" "$CONTENT_SSJ"
 }
 function putssj {
-  dcurl -X PUT -H $CONTENT_SSJ -d $@
+  dcurl PUT "$@" "$CONTENT_SSJ"
 }
 function postssj {
-  dcurl -X POST -H $CONTENT_SSJ -d $@
+  dcurl POST "$@" "$CONTENT_SSJ"
 }
 function delssj {
-  dcurl -X DELETE -H $CONTENT_SSJ $@
+  dcurl DELETE "$@" "$CONTENT_SSJ"
 }
 
 # SSKJ
 function getsskj {
-  dcurl -H $CONTENT_SSKJ $@
+  dcurl "$@" "$CONTENT_SSKJ"
 }
 function putsskj {
-  dcurl -X PUT -H $CONTENT_SSKJ -d $@
+  dcurl PUT "$@" "$CONTENT_SSKJ"
 }
 function postsskj {
-  dcurl POST "$@" $CONTENT_SSKJ 
+  dcurl POST "$@" "$CONTENT_SSKJ"
 }
 function delsskj {
-  dcurl -X DELETE -H $CONTENT_SSKJ $@
+  dcurl DELETE "$@" "$CONTENT_SSKJ"
 }
 
 # SSMJ
 function getssmj {
-  dcurl -H $CONTENT_SSMJ $@
+  dcurl "$@" "$CONTENT_SSMJ"
 }
 function putssmj {
-  ndcurl -X PUT -H $CONTENT_SSMJ -d $@
+  dcurl PUT "$@" "$CONTENT_SSMJ"
 }
 function postssmj {
-  dcurl POST "$@" $CONTENT_SSMJ 
+  dcurl POST "$@" "$CONTENT_SSMJ"
 }
 function delssmj {
-  dcurl -X DELETE -H $CONTENT_SSMJ $@
+  dcurl DELETE "$@" "$CONTENT_SSMJ"
 }
 
 # SSAJ
 function getssaj {
-  dcurl -H $CONTENT_SSAJ $@
+  dcurl "$@" "$CONTENT_SSAJ"
 }
 function putssaj {
-  dcurl -X PUT -H $CONTENT_SSAJ -d $@
+  dcurl PUT "$@" "$CONTENT_SSAJ"
 }
 function postssaj {
-  dcurl -X POST -H $CONTENT_SSAJ -d $@
+  dcurl POST "$@" "$CONTENT_SSAJ"
 }
 function delssaj {
-  dcurl -X DELETE -H $CONTENT_SSAJ $@
+  dcurl DELETE "$@" "$CONTENT_SSAJ"
 }
 
 # SSWJ
 function getsswj {
-  dcurl -H $CONTENT_SSWJ $@
+  dcurl "$@" "$CONTENT_SSWJ"
 }
 function putsswj {
-  dcurl -X PUT -H $CONTENT_SSWJ -d $@
+  dcurl PUT "$@" "$CONTENT_SSWJ"
 }
 function postsswj {
-  dcurl -X POST -H $CONTENT_SSWJ -d $@
+  dcurl POST "$@" "$CONTENT_SSWJ"
 }
 function delsswj {
-  dcurl -X DELETE -H $CONTENT_SSWJ $@
+  dcurl DELETE "$@" "$CONTENT_SSWJ"
 }
 
 # Other
